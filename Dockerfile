@@ -2,13 +2,13 @@ FROM alpine:latest AS downloader
 ARG TWITCHDOWNLOADER_VERSION="1.54.2"
 RUN apk add unzip wget curl
 RUN wget -q "https://github.com/lay295/TwitchDownloader/releases/download/${TWITCHDOWNLOADER_VERSION}/TwitchDownloaderCLI-${TWITCHDOWNLOADER_VERSION}-Linux-x64.zip" -O td.zip
-RUN unzip -j td.zip "TwitchDownloaderCLI" -d /opt
-RUN wget https://github.com/google/fonts/archive/master.zip -O fonts.zip
-RUN mkdir -p /opt/fonts && unzip -j fonts.zip -d /opt/fonts
+RUN unzip -j td.zip "TwitchDownloaderCLI" -d /opt/TwitchDownloader
+RUN wget -q https://github.com/google/fonts/archive/refs/heads/main.zip -O fonts.zip
+RUN unzip -j fonts.zip -d /opt/fonts
 
 
 FROM linuxserver/ffmpeg:amd64-7.0-cli-ls135
-COPY --from=downloader /opt/TwitchDownloaderCLI /usr/local/bin/TwitchDownloaderCLI
+COPY --from=downloader /opt/TwitchDownloader/TwitchDownloaderCLI /usr/local/bin/TwitchDownloaderCLI
 COPY --from=downloader /opt/fonts /usr/local/share/fonts
 RUN chmod +x /usr/local/bin/TwitchDownloaderCLI
 
