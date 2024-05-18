@@ -1,0 +1,29 @@
+name: Check TwitchDownloader Release
+
+on:
+  schedule:
+    - cron: '0 * * * *'
+
+jobs:
+  update-version-file:
+    runs-on: ubuntu-latest
+    steps:
+      -
+        name: Checkout code
+        uses: actions/checkout@v3
+
+      -
+        name: Get Latest Release from TwitchDownloader
+        run: |
+          LATEST_VERSION=$(curl -s -H "Accept: application/vnd.github.v3+json" https://api.github.com/repos/lay295/TwitchDownloader/releases/latest | jq -r .tag_name)
+          echo "Latest version: $LATEST_VERSION"
+          echo "$LATEST_VERSION" > .version
+
+      -
+        name: Commit and Push
+        run: |
+          git config user.name github-actions
+          git config user.email github-actions@github.com
+          git add .version
+          git commit -m "Update TwitchDownloader version to $(cat .version)" || echo "No changes to commit"
+          git push
