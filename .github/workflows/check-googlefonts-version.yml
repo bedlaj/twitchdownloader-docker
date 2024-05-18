@@ -16,21 +16,21 @@ jobs:
         run: |
           LATEST_VERSION=$(curl -s https://api.github.com/repos/google/fonts/commits/main | jq -r ".sha")
           echo "Latest version: $LATEST_VERSION"
-          echo "$LATEST_VERSION" > .fonts_version
+          echo "$LATEST_VERSION" > .versions/fonts
 
       - name: Commit and Push
         id: commit_and_push
         run: |
           git config user.name github-actions
           git config user.email github-actions@github.com
-          git add .fonts_version
-          COMMIT_MSG="Update GoogleFonts to $(cat .fonts_version)"
+          git add .versions/fonts
+          COMMIT_MSG="Update GoogleFonts to $(cat .versions/fonts)"
           git commit -m "$COMMIT_MSG" && echo "version_changed=true" >> $GITHUB_ENV && git push origin HEAD:main || echo "version_changed=false" >> $GITHUB_ENV
 
       - name: Trigger Next Workflow
         if: env.version_changed == 'true'
         run: |
-          curl -X POST -H "Authorization: token ${{ secrets.PERSONAL_ACCESS_TOKEN }}" \
+          curl -X POST -H "Authorization: token ${{ secrets.GITHUB_TOKEN }}" \
           -H "Accept: application/vnd.github.v3+json" \
           "https://api.github.com/repos/${{ github.repository }}/dispatches" \
-          -d '{"event_type": "version-changed"}'
+          -d '{"event_type": "workflow_dispatch"}'

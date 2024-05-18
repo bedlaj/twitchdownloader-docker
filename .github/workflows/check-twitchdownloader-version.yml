@@ -16,21 +16,21 @@ jobs:
         run: |
           LATEST_VERSION=$(curl -s -H "Accept: application/vnd.github.v3+json" https://api.github.com/repos/lay295/TwitchDownloader/releases/latest | jq -r .tag_name)
           echo "Latest version: $LATEST_VERSION"
-          echo "$LATEST_VERSION" > .version
+          echo "$LATEST_VERSION" > .versions/twitchdownloader
 
       - name: Commit and Push
         id: commit_and_push
         run: |
           git config user.name github-actions
           git config user.email github-actions@github.com
-          git add .version
-          COMMIT_MSG="Update TwitchDownloader version to $(cat .version)"
+          git add .versions/twitchdownloader
+          COMMIT_MSG="Update TwitchDownloader version to $(cat .versions/twitchdownloader)"
           git commit -m "$COMMIT_MSG" && echo "version_changed=true" >> $GITHUB_ENV && git push origin HEAD:main || echo "version_changed=false" >> $GITHUB_ENV
 
       - name: Trigger Next Workflow
         if: env.version_changed == 'true'
         run: |
-          curl -X POST -H "Authorization: token ${{ secrets.PERSONAL_ACCESS_TOKEN }}" \
+          curl -X POST -H "Authorization: token ${{ secrets.GITHUB_TOKEN }}" \
           -H "Accept: application/vnd.github.v3+json" \
           "https://api.github.com/repos/${{ github.repository }}/dispatches" \
           -d '{"event_type": "version-changed"}'

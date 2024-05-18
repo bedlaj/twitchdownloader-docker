@@ -29,7 +29,7 @@ jobs:
 
       - name: Load Version
         run: |
-          TWITCHDOWNLOADER_VERSION=$(head -n 1 .version)
+          TWITCHDOWNLOADER_VERSION=$(head -n 1 .versions/twitchdownloader)
           echo "TWITCHDOWNLOADER_VERSION=$TWITCHDOWNLOADER_VERSION" >> $GITHUB_ENV
 
       - name: Set tags based on matrix value
