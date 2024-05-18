@@ -31,19 +31,19 @@ COPY --from=twitchdownloader-downloader /opt/TwitchDownloader/TwitchDownloaderCL
 COPY --from=fonts-downloader /opt/fonts /usr/local/share/fonts/googlefonts
 RUN chmod +x /usr/local/bin/TwitchDownloaderCLI
 
-RUN if [ "${FONTS}" = "true" ]; then \
+RUN   if [ "${FONTS}" = "true" ]; then \
           echo "**** install runtime ****" && \
                   echo ttf-mscorefonts-installer msttcorefonts/accepted-mscorefonts-eula select true | debconf-set-selections && \
                   apt-get update && \
-                  ACCEPT_EULA=Y DEBIAN_FRONTEND=noninteractive apt-get install -y fontconfig libfontconfig1 ttf-mscorefonts-installer && \
-          echo "**** configure ****" && \
-                  fc-cache -f && fc-list ; \
-    else \
+                  ACCEPT_EULA=Y DEBIAN_FRONTEND=noninteractive apt-get install -y fontconfig libfontconfig1 ttf-mscorefonts-installer ; \
+      else \
           echo "**** install runtime ****" && \
                   apt-get update && DEBIAN_FRONTEND=noninteractive apt-get install -y fontconfig libfontconfig1 ; \
-  fi && \
-    echo "**** clean up ****" && \
-          rm -rf /var/lib/apt/lists/* /var/tmp/*
+      fi && \
+        echo "**** configure ****" && \
+              fc-cache -f && fc-list && \
+        echo "**** clean up ****" && \
+              rm -rf /var/lib/apt/lists/* /var/tmp/*
 
 RUN /usr/local/bin/ffmpeg -version && /usr/local/bin/TwitchDownloaderCLI --version || true
 
