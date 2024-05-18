@@ -13,14 +13,16 @@ RUN if [ "${TARGETPLATFORM}" = "linux/amd64" ]; then \
     echo "Downloading TwitchDownloader platform $TWITCHDOWNLOADER_PLATFORM" && wget -q "https://github.com/lay295/TwitchDownloader/releases/download/${TWITCHDOWNLOADER_VERSION}/TwitchDownloaderCLI-${TWITCHDOWNLOADER_VERSION}-$TWITCHDOWNLOADER_PLATFORM.zip" -O td.zip
 
 RUN unzip -qq -j td.zip "TwitchDownloaderCLI" -d /opt/TwitchDownloader
-RUN wget -q https://github.com/google/fonts/archive/refs/heads/main.zip -O fonts.zip
-RUN unzip -qq -j -o fonts.zip -d /opt/fonts
 
 
 FROM alpine:latest AS fonts-downloader
-RUN apk add unzip wget
-RUN wget -q https://github.com/google/fonts/archive/refs/heads/main.zip -O fonts.zip
-RUN unzip -qq -j -o fonts.zip -d /opt/fonts
+ARG FONTS="true"
+
+RUN if [ "${FONTS}" = "true" ]; then \
+        apk add unzip wget && wget -q https://github.com/google/fonts/archive/refs/heads/main.zip -O fonts.zip && unzip -qq -j -o fonts.zip -d /opt/fonts ; \
+    else \
+        mkdir -p /opt/fonts ; \
+    fi
 
 
 FROM linuxserver/ffmpeg:7.0-cli-ls137
