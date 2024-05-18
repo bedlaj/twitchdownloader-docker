@@ -14,7 +14,7 @@ jobs:
 
       - name: Get Latest commit from GoogleFonts
         run: |
-          LATEST_VERSION=$(curl -s https://api.github.com/repos/google/fonts/commits/main | jq ".sha")
+          LATEST_VERSION=$(curl -s https://api.github.com/repos/google/fonts/commits/main | jq -r ".sha")
           echo "Latest version: $LATEST_VERSION"
           echo "$LATEST_VERSION" > .fonts_version
 
