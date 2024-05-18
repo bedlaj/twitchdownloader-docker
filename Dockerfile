@@ -35,14 +35,15 @@ RUN if [ "${FONTS}" = "true" ]; then \
           echo "**** install runtime ****" && \
                   echo ttf-mscorefonts-installer msttcorefonts/accepted-mscorefonts-eula select true | debconf-set-selections && \
                   apt-get update && \
-                  ACCEPT_EULA=Y DEBIAN_FRONTEND=noninteractive apt-get install -y fontconfig ttf-mscorefonts-installer && \
-          echo "**** clean up ****" && \
-                  rm -rf \
-                  /var/lib/apt/lists/* \
-                  /var/tmp/* && \
+                  ACCEPT_EULA=Y DEBIAN_FRONTEND=noninteractive apt-get install -y fontconfig libfontconfig1 ttf-mscorefonts-installer && \
           echo "**** configure ****" && \
                   fc-cache -f && fc-list ; \
-  fi
+    else \
+          echo "**** install runtime ****" && \
+                  apt-get update && DEBIAN_FRONTEND=noninteractive apt-get install fontconfig libfontconfig1 ; \
+  fi && \
+    echo "**** clean up ****" && \
+          rm -rf /var/lib/apt/lists/* /var/tmp/*
 
 RUN /usr/local/bin/ffmpeg -version && /usr/local/bin/TwitchDownloaderCLI --version || true
 
