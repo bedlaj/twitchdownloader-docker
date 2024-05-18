@@ -40,7 +40,7 @@ RUN if [ "${FONTS}" = "true" ]; then \
                   fc-cache -f && fc-list ; \
     else \
           echo "**** install runtime ****" && \
-                  apt-get update && DEBIAN_FRONTEND=noninteractive apt-get install fontconfig libfontconfig1 ; \
+                  apt-get update && DEBIAN_FRONTEND=noninteractive apt-get install -y fontconfig libfontconfig1 ; \
   fi && \
     echo "**** clean up ****" && \
           rm -rf /var/lib/apt/lists/* /var/tmp/*
