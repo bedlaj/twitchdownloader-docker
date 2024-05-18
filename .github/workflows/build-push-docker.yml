@@ -13,7 +13,7 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        fonts: ['true', 'false']
+        fonts: [true, false]
     steps:
       -
         name: Checkout code
@@ -46,6 +46,7 @@ jobs:
           else
             echo "latest-tag=latest-nofonts" >> $GITHUB_ENV
             echo "version-tag=${{ env.TWITCHDOWNLOADER_VERSION }}-nofonts" >> $GITHUB_ENV
+          fi
 
       -
         name: Build and push
