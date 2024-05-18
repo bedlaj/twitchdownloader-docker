@@ -36,6 +36,17 @@ jobs:
           TWITCHDOWNLOADER_VERSION=$(head -n 1 .version)
           echo "TWITCHDOWNLOADER_VERSION=$TWITCHDOWNLOADER_VERSION" >> $GITHUB_ENV
 
+      - 
+        name: Set tags based on matrix value
+        id: set-tags
+        run: |
+          if [ "${{ matrix.fonts }}" == "true" ]; then
+            echo "latest-tag=latest" >> $GITHUB_ENV
+            echo "version-tag=${{ env.TWITCHDOWNLOADER_VERSION }}" >> $GITHUB_ENV
+          else
+            echo "latest-tag=latest-nofonts" >> $GITHUB_ENV
+            echo "version-tag=${{ env.TWITCHDOWNLOADER_VERSION }}-nofonts" >> $GITHUB_ENV
+
       -
         name: Build and push
         uses: docker/build-push-action@v5
@@ -44,8 +55,8 @@ jobs:
           platforms: linux/amd64,linux/arm64
           push: true
           tags: |
-            bedlaj/twitchdownloader:${{ matrix.fonts == 'true' && 'latest' || 'latest-nofonts' }}
-            bedlaj/twitchdownloader:${{ env.TWITCHDOWNLOADER_VERSION }}${{ matrix.fonts == 'true' && '' || '-nofonts' }}
+            bedlaj/twitchdownloader:${{ env.latest-tag }}
+            bedlaj/twitchdownloader:${{ env.version-tag }}  
           build-args: |
             TWITCHDOWNLOADER_VERSION=${{ env.TWITCHDOWNLOADER_VERSION }}
             FONTS=${{ matrix.fonts }}
