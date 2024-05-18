@@ -1,13 +1,25 @@
 FROM alpine:latest AS downloader
-ARG TWITCHDOWNLOADER_VERSION="1.54.3"
+ARG TWITCHDOWNLOADER_VERSION
+ARG TARGETPLATFORM
+
+ENV TWITCHDOWNLOADER_PLATFORM="Linux-x64"
+
 RUN apk add unzip wget curl
-RUN wget -q "https://github.com/lay295/TwitchDownloader/releases/download/${TWITCHDOWNLOADER_VERSION}/TwitchDownloaderCLI-${TWITCHDOWNLOADER_VERSION}-Linux-x64.zip" -O td.zip
+RUN if [ "${TARGETPLATFORM}" = "linux/amd64" ]; then \
+        TWITCHDOWNLOADER_PLATFORM="Linux-x64"; \
+    elif [ "${TARGETPLATFORM}" = "linux/arm64" ]; then \
+        TWITCHDOWNLOADER_PLATFORM="LinuxArm64"; \
+    else \
+        echo "No valid platform specified"; \
+    fi && \
+    echo "Downloading TwitchDownloader platform $TWITCHDOWNLOADER_PLATFORM" && wget -q "https://github.com/lay295/TwitchDownloader/releases/download/${TWITCHDOWNLOADER_VERSION}/TwitchDownloaderCLI-${TWITCHDOWNLOADER_VERSION}-$TWITCHDOWNLOADER_PLATFORM.zip" -O td.zip
+
 RUN unzip -qq -j td.zip "TwitchDownloaderCLI" -d /opt/TwitchDownloader
 RUN wget -q https://github.com/google/fonts/archive/refs/heads/main.zip -O fonts.zip
 RUN unzip -qq -j -o fonts.zip -d /opt/fonts
 
 
-FROM linuxserver/ffmpeg:amd64-version-7.0-cli
+FROM linuxserver/ffmpeg:7.0-cli-ls137
 COPY --from=downloader /opt/TwitchDownloader/TwitchDownloaderCLI /usr/local/bin/TwitchDownloaderCLI
 COPY --from=downloader /opt/fonts /usr/local/share/fonts
 RUN chmod +x /usr/local/bin/TwitchDownloaderCLI
@@ -23,5 +35,7 @@ RUN \
       /var/tmp/* && \
   echo "**** configure ****" && \
     fc-cache -f && fc-list
+
+RUN ffmpeg -version && TwitchDownloaderCLI --version
 
 ENTRYPOINT ["/usr/local/bin/TwitchDownloaderCLI"]
