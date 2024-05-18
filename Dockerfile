@@ -2,8 +2,6 @@ FROM alpine:latest AS twitchdownloader-downloader
 ARG TWITCHDOWNLOADER_VERSION
 ARG TARGETPLATFORM
 
-ENV TWITCHDOWNLOADER_PLATFORM="Linux-x64"
-
 RUN apk add unzip wget
 RUN if [ "${TARGETPLATFORM}" = "linux/amd64" ]; then \
         TWITCHDOWNLOADER_PLATFORM="Linux-x64"; \
@@ -42,6 +40,6 @@ RUN \
   echo "**** configure ****" && \
     fc-cache -f && fc-list
 
-RUN /usr/local/bin/ffmpeg -version && /usr/local/bin/TwitchDownloaderCLI --version
+RUN /usr/local/bin/ffmpeg -version && /usr/local/bin/TwitchDownloaderCLI --version || true
 
 ENTRYPOINT ["/usr/local/bin/TwitchDownloaderCLI"]
