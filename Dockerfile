@@ -1,5 +1,5 @@
 FROM alpine:latest AS downloader
-ARG TWITCHDOWNLOADER_VERSION="1.54.2"
+ARG TWITCHDOWNLOADER_VERSION="1.54.3"
 RUN apk add unzip wget curl
 RUN wget -q "https://github.com/lay295/TwitchDownloader/releases/download/${TWITCHDOWNLOADER_VERSION}/TwitchDownloaderCLI-${TWITCHDOWNLOADER_VERSION}-Linux-x64.zip" -O td.zip
 RUN unzip -qq -j td.zip "TwitchDownloaderCLI" -d /opt/TwitchDownloader
