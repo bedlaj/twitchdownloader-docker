@@ -26,21 +26,24 @@ RUN if [ "${FONTS}" = "true" ]; then \
 
 
 FROM linuxserver/ffmpeg:7.0-cli-ls137
+ARG FONTS="true"
 COPY --from=twitchdownloader-downloader /opt/TwitchDownloader/TwitchDownloaderCLI /usr/local/bin/TwitchDownloaderCLI
 COPY --from=fonts-downloader /opt/fonts /usr/local/share/fonts
 RUN chmod +x /usr/local/bin/TwitchDownloaderCLI
 
 RUN \
-  echo "**** install runtime ****" && \
-    echo ttf-mscorefonts-installer msttcorefonts/accepted-mscorefonts-eula select true | debconf-set-selections && \
-    apt-get update && \
-    ACCEPT_EULA=Y DEBIAN_FRONTEND=noninteractive apt-get install -y fontconfig ttf-mscorefonts-installer && \
-  echo "**** clean up ****" && \
-    rm -rf \
-      /var/lib/apt/lists/* \
-      /var/tmp/* && \
-  echo "**** configure ****" && \
-    fc-cache -f && fc-list
+  if [ "${FONTS}" = "true" ]; then \
+          echo "**** install runtime ****" && \
+                  echo ttf-mscorefonts-installer msttcorefonts/accepted-mscorefonts-eula select true | debconf-set-selections && \
+                  apt-get update && \
+                  ACCEPT_EULA=Y DEBIAN_FRONTEND=noninteractive apt-get install -y fontconfig ttf-mscorefonts-installer && \
+          echo "**** clean up ****" && \
+                  rm -rf \
+                  /var/lib/apt/lists/* \
+                  /var/tmp/* && \
+          echo "**** configure ****" && \
+                  fc-cache -f && fc-list && \
+  fi
 
 RUN /usr/local/bin/ffmpeg -version && /usr/local/bin/TwitchDownloaderCLI --version || true
 
