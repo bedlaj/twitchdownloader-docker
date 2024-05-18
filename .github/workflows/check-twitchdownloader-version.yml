@@ -2,29 +2,43 @@ name: Check TwitchDownloader Release
 
 on:
   schedule:
-    - cron: '0 * * * *'
+    - cron: '0 * * * *'  # Runs every 4 hours
   workflow_dispatch:
 
 jobs:
   update-version-file:
     runs-on: ubuntu-latest
     steps:
-      -
-        name: Checkout code
+      - name: Checkout code
         uses: actions/checkout@v3
 
-      -
-        name: Get Latest Release from TwitchDownloader
+      - name: Get Latest Release from TwitchDownloader
         run: |
           LATEST_VERSION=$(curl -s -H "Accept: application/vnd.github.v3+json" https://api.github.com/repos/lay295/TwitchDownloader/releases/latest | jq -r .tag_name)
           echo "Latest version: $LATEST_VERSION"
           echo "$LATEST_VERSION" > .version
 
-      -
-        name: Commit and Push
+      - name: Commit and Push
+        id: commit_and_push
         run: |
           git config user.name github-actions
           git config user.email github-actions@github.com
           git add .version
-          git commit -m "Update TwitchDownloader version to $(cat .version)" || echo "No changes to commit"
-          git -c http.extraHeader="AUTHORIZATION: bearer ${{ secrets.PERSONAL_ACCESS_TOKEN }}" push origin main
+          COMMIT_MSG="Update TwitchDownloader version to $(cat .version)"
+          git commit -m "$COMMIT_MSG" || echo "No changes to commit"
+          if [ $? -eq 0 ]; then
+            echo "Changes were committed"
+            echo "version_changed=true" >> $GITHUB_ENV
+            git push origin HEAD:main
+          else
+            echo "No changes to commit, skipping push"
+            echo "version_changed=false" >> $GITHUB_ENV
+          fi
+
+      - name: Trigger Next Workflow
+        if: env.version_changed == 'true'
+        run: |
+          curl -X POST -H "Authorization: token ${{ secrets.PERSONAL_ACCESS_TOKEN }}" \
+          -H "Accept: application/vnd.github.v3+json" \
+          "https://api.github.com/repos/${{ github.repository }}/dispatches" \
+          -d '{"event_type": "version-changed"}'
