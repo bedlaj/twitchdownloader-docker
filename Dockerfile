@@ -7,7 +7,7 @@ RUN wget -q https://github.com/google/fonts/archive/refs/heads/main.zip -O fonts
 RUN unzip -qq -j -o fonts.zip -d /opt/fonts
 
 
-FROM linuxserver/ffmpeg:amd64-7.0-cli-ls135
+FROM linuxserver/ffmpeg:amd64-version-7.0-cli
 COPY --from=downloader /opt/TwitchDownloader/TwitchDownloaderCLI /usr/local/bin/TwitchDownloaderCLI
 COPY --from=downloader /opt/fonts /usr/local/share/fonts
 RUN chmod +x /usr/local/bin/TwitchDownloaderCLI
