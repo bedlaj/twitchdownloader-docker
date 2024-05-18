@@ -41,7 +41,7 @@ RUN if [ "${FONTS}" = "true" ]; then \
                   /var/lib/apt/lists/* \
                   /var/tmp/* && \
           echo "**** configure ****" && \
-                  fc-cache -f && fc-list ;
+                  fc-cache -f && fc-list ; \
   fi
 
 RUN /usr/local/bin/ffmpeg -version && /usr/local/bin/TwitchDownloaderCLI --version || true
