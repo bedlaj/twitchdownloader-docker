@@ -28,7 +28,7 @@ RUN if [ "${FONTS}" = "true" ]; then \
 FROM linuxserver/ffmpeg:7.0-cli-ls137
 ARG FONTS="true"
 COPY --from=twitchdownloader-downloader /opt/TwitchDownloader/TwitchDownloaderCLI /usr/local/bin/TwitchDownloaderCLI
-COPY --from=fonts-downloader /opt/fonts/fonts-main /usr/local/share/fonts/googlefonts
+COPY --from=fonts-downloader /opt/fonts /usr/local/share/fonts/googlefonts
 RUN chmod +x /usr/local/bin/TwitchDownloaderCLI
 
 RUN if [ "${FONTS}" = "true" ]; then \
