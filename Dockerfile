@@ -1,10 +1,10 @@
-FROM alpine:latest AS downloader
+FROM alpine:latest AS twitchdownloader-downloader
 ARG TWITCHDOWNLOADER_VERSION
 ARG TARGETPLATFORM
 
 ENV TWITCHDOWNLOADER_PLATFORM="Linux-x64"
 
-RUN apk add unzip wget curl
+RUN apk add unzip wget
 RUN if [ "${TARGETPLATFORM}" = "linux/amd64" ]; then \
         TWITCHDOWNLOADER_PLATFORM="Linux-x64"; \
     elif [ "${TARGETPLATFORM}" = "linux/arm64" ]; then \
@@ -19,9 +19,15 @@ RUN wget -q https://github.com/google/fonts/archive/refs/heads/main.zip -O fonts
 RUN unzip -qq -j -o fonts.zip -d /opt/fonts
 
 
+FROM alpine:latest AS fonts-downloader
+RUN apk add unzip wget
+RUN wget -q https://github.com/google/fonts/archive/refs/heads/main.zip -O fonts.zip
+RUN unzip -qq -j -o fonts.zip -d /opt/fonts
+
+
 FROM linuxserver/ffmpeg:7.0-cli-ls137
-COPY --from=downloader /opt/TwitchDownloader/TwitchDownloaderCLI /usr/local/bin/TwitchDownloaderCLI
-COPY --from=downloader /opt/fonts /usr/local/share/fonts
+COPY --from=twitchdownloader-downloader /opt/TwitchDownloader/TwitchDownloaderCLI /usr/local/bin/TwitchDownloaderCLI
+COPY --from=fonts-downloader /opt/fonts /usr/local/share/fonts
 RUN chmod +x /usr/local/bin/TwitchDownloaderCLI
 
 RUN \
@@ -36,6 +42,6 @@ RUN \
   echo "**** configure ****" && \
     fc-cache -f && fc-list
 
-RUN ffmpeg -version && TwitchDownloaderCLI --version
+RUN /usr/local/bin/ffmpeg -version && /usr/local/bin/TwitchDownloaderCLI --version
 
 ENTRYPOINT ["/usr/local/bin/TwitchDownloaderCLI"]
