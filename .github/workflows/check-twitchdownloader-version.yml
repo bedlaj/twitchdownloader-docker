@@ -25,15 +25,7 @@ jobs:
           git config user.email github-actions@github.com
           git add .version
           COMMIT_MSG="Update TwitchDownloader version to $(cat .version)"
-          git commit -m "$COMMIT_MSG" || echo "No changes to commit"
-          if [ $? -eq 0 ]; then
-            echo "Changes were committed"
-            echo "version_changed=true" >> $GITHUB_ENV
-            git push origin HEAD:main
-          else
-            echo "No changes to commit, skipping push"
-            echo "version_changed=false" >> $GITHUB_ENV
-          fi
+          git commit -m "$COMMIT_MSG" && echo "version_changed=true" >> $GITHUB_ENV && git push origin HEAD:main || echo "version_changed=false" >> $GITHUB_ENV
 
       - name: Trigger Next Workflow
         if: env.version_changed == 'true'
