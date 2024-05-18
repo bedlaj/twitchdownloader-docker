@@ -33,7 +33,7 @@ jobs:
       -
         name: Load Version
         run: |
-          TWITCHDOWNLOADER_VERSION=$(cat .version)
+          TWITCHDOWNLOADER_VERSION=$(head -n 1 .version)
           echo "TWITCHDOWNLOADER_VERSION=$TWITCHDOWNLOADER_VERSION" >> $GITHUB_ENV
 
       -
