@@ -19,7 +19,7 @@ FROM alpine:latest AS fonts-downloader
 ARG FONTS="true"
 
 RUN if [ "${FONTS}" = "true" ]; then \
-        apk add unzip wget && wget -q https://github.com/google/fonts/archive/refs/heads/main.zip -O fonts.zip && unzip -qq -j -o fonts.zip -d /opt/fonts ; \
+        apk add unzip wget && wget -q https://github.com/google/fonts/archive/refs/heads/main.zip -O fonts.zip && unzip -qq -j -o fonts.zip -d /opt/fonts "*.ttf" ; \
     else \
         mkdir -p /opt/fonts ; \
     fi
@@ -28,7 +28,7 @@ RUN if [ "${FONTS}" = "true" ]; then \
 FROM linuxserver/ffmpeg:7.0-cli-ls137
 ARG FONTS="true"
 COPY --from=twitchdownloader-downloader /opt/TwitchDownloader/TwitchDownloaderCLI /usr/local/bin/TwitchDownloaderCLI
-COPY --from=fonts-downloader /opt/fonts /usr/local/share/fonts
+COPY --from=fonts-downloader /opt/fonts/fonts-main /usr/local/share/fonts/googlefonts
 RUN chmod +x /usr/local/bin/TwitchDownloaderCLI
 
 RUN if [ "${FONTS}" = "true" ]; then \
