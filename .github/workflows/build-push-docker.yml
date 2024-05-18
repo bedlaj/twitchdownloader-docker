@@ -11,6 +11,9 @@ on:
 jobs:
   docker-build-push:
     runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        fonts: [true, false]
     steps:
       -
         name: Checkout code
@@ -41,6 +44,8 @@ jobs:
           platforms: linux/amd64,linux/arm64
           push: true
           tags: |
-            bedlaj/twitchdownloader:latest
-            bedlaj/twitchdownloader:${{ env.TWITCHDOWNLOADER_VERSION }}
-          build-args: TWITCHDOWNLOADER_VERSION=${{ env.TWITCHDOWNLOADER_VERSION }}
+            bedlaj/twitchdownloader:${{ matrix.fonts && 'latest-fonts' || 'latest' }}
+            bedlaj/twitchdownloader:${{ env.TWITCHDOWNLOADER_VERSION }}${{ matrix.fonts && '-fonts' || '' }}
+          build-args: |
+            TWITCHDOWNLOADER_VERSION=${{ env.TWITCHDOWNLOADER_VERSION }}
+            FONTS=${{ matrix.fonts }}
