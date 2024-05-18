@@ -31,8 +31,7 @@ COPY --from=twitchdownloader-downloader /opt/TwitchDownloader/TwitchDownloaderCL
 COPY --from=fonts-downloader /opt/fonts /usr/local/share/fonts
 RUN chmod +x /usr/local/bin/TwitchDownloaderCLI
 
-RUN \
-  if [ "${FONTS}" = "true" ]; then \
+RUN if [ "${FONTS}" = "true" ]; then \
           echo "**** install runtime ****" && \
                   echo ttf-mscorefonts-installer msttcorefonts/accepted-mscorefonts-eula select true | debconf-set-selections && \
                   apt-get update && \
@@ -42,7 +41,7 @@ RUN \
                   /var/lib/apt/lists/* \
                   /var/tmp/* && \
           echo "**** configure ****" && \
-                  fc-cache -f && fc-list && \
+                  fc-cache -f && fc-list ;
   fi
 
 RUN /usr/local/bin/ffmpeg -version && /usr/local/bin/TwitchDownloaderCLI --version || true
