@@ -30,7 +30,7 @@ jobs:
       - name: Trigger Next Workflow
         if: env.version_changed == 'true'
         run: |
-          curl -X POST -H "Authorization: token ${{ secrets.GITHUB_TOKEN }}" \
+          curl -X POST -H "Authorization: token ${{ secrets.PERSONAL_ACCESS_TOKEN }}" \
           -H "Accept: application/vnd.github.v3+json" \
           "https://api.github.com/repos/${{ github.repository }}/dispatches" \
           -d '{"event_type": "version-changed"}'
