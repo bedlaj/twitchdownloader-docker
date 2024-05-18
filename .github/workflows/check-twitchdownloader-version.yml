@@ -27,4 +27,4 @@ jobs:
           git config user.email github-actions@github.com
           git add .version
           git commit -m "Update TwitchDownloader version to $(cat .version)" || echo "No changes to commit"
-          git push
+          git -c http.extraHeader="AUTHORIZATION: bearer ${{ secrets.PERSONAL_ACCESS_TOKEN }}" push origin main
