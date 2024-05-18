@@ -44,8 +44,8 @@ jobs:
           platforms: linux/amd64,linux/arm64
           push: true
           tags: |
-            bedlaj/twitchdownloader:${{ matrix.fonts && 'latest-fonts' || 'latest' }}
-            bedlaj/twitchdownloader:${{ env.TWITCHDOWNLOADER_VERSION }}${{ matrix.fonts && '-fonts' || '' }}
+            bedlaj/twitchdownloader:${{ matrix.fonts && 'latest' || 'latest-nofonts' }}
+            bedlaj/twitchdownloader:${{ env.TWITCHDOWNLOADER_VERSION }}${{ matrix.fonts && '' || '-nofonts' }}
           build-args: |
             TWITCHDOWNLOADER_VERSION=${{ env.TWITCHDOWNLOADER_VERSION }}
             FONTS=${{ matrix.fonts }}
