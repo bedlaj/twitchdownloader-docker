@@ -2,7 +2,7 @@ name: Check TwitchDownloader Release
 
 on:
   schedule:
-    - cron: '0 * * * *'  # Runs every 4 hours
+    - cron: '0 * * * *'
   workflow_dispatch:
 
 jobs:
