@@ -13,7 +13,7 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        fonts: [true, false]
+        fonts: ['true', 'false']
     steps:
       -
         name: Checkout code
