@@ -33,7 +33,10 @@ jobs:
       - name: Load Version
         run: |
           TWITCHDOWNLOADER_VERSION=$(head -n 1 .versions/twitchdownloader)
+          FONTS_VERSION=$(head -n 1 .versions/fonts)
+          SHORT_FONTS_VERSION="${FONTS_VERSION:0:7}"
           echo "TWITCHDOWNLOADER_VERSION=$TWITCHDOWNLOADER_VERSION" >> $GITHUB_ENV
+          echo "SHORT_FONTS_VERSION=$SHORT_FONTS_VERSION" >> $GITHUB_ENV
 
       - name: Set tags based on matrix value
         id: set-tags
@@ -41,9 +44,11 @@ jobs:
           if [[ "${{ matrix.fonts }}" == "true" ]]; then
             echo "LATEST_TAG=latest" >> $GITHUB_ENV
             echo "VERSION_TAG=${{ env.TWITCHDOWNLOADER_VERSION }}" >> $GITHUB_ENV
+            echo "VERSION2_TAG=${{ env.TWITCHDOWNLOADER_VERSION }}-${{ env.SHORT_FONTS_VERSION }}" >> $GITHUB_ENV
           else
             echo "LATEST_TAG=latest-nofonts" >> $GITHUB_ENV
             echo "VERSION_TAG=${{ env.TWITCHDOWNLOADER_VERSION }}-nofonts" >> $GITHUB_ENV
+            echo "VERSION2_TAG=${{ env.TWITCHDOWNLOADER_VERSION }}-nofonts" >> $GITHUB_ENV
           fi
           
       - name: Build and push
@@ -55,6 +60,7 @@ jobs:
           tags: |
             bedlaj/twitchdownloader:${{ env.LATEST_TAG }}
             bedlaj/twitchdownloader:${{ env.VERSION_TAG }}
+            bedlaj/twitchdownloader:${{ env.VERSION2_TAG }}
           build-args: |
             TWITCHDOWNLOADER_VERSION=${{ env.TWITCHDOWNLOADER_VERSION }}
             FONTS=${{ matrix.fonts }}
